@@ -146,12 +146,14 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
   display: flex; flex-direction: column; gap: 24px;
   margin-top: 4px;
   margin-bottom: 8px;
+  width: 100%;
 }
 .home-row {
   display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
 }
 .home-row-left { display: flex; align-items: center; gap: 17px; }
-.home-row-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.home-row-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 .home-row-label { font-size: 16px; color: var(--t1); }
 .home-row-val { font-size: 16px; font-weight: 700; }
 
@@ -569,24 +571,22 @@ function renderHome(d) {
   const pct = d.pctGasto;
   const dias = new Date(new Date().getFullYear(), new Date().getMonth()+1,0).getDate() - new Date().getDate();
 
-  // Ring — large SVG matching Figma proportions
+  // Status color — green < 80%, orange 80-99%, red ≥ 100%
+  const color = pct >= 100 ? '#ef4444' : pct >= 80 ? '#f97316' : '#22c55e';
+
   const R = 168, C = +(2*Math.PI*R).toFixed(1);
   const filled = Math.min(pct, 100) / 100;
   const offset = +(C * (1 - filled)).toFixed(1);
-  // Red when over budget, orange when >80%, else white
-  const ringColor = isOver ? '#ef4444' : (pct > 80 ? '#f97316' : '#ffffff');
 
   const saldoFmt = (isOver ? '-R$' : 'R$') + fmt(Math.abs(d.saldoRestante));
-  const statusTxt = isOver ? 'Acima da receita do mês' : `${dias} dias restantes`;
-
-  const metaVal = d.metaEconomia > 0 ? `R$${fmt(d.metaEconomia)}` : '—';
+  const metaVal = d.metaEconomia > 0 ? `R$ ${fmt(d.metaEconomia)}` : '—';
 
   document.getElementById('home-body').innerHTML = `
     <div class="ring-wrap">
       <svg class="ring-svg" viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="190" cy="190" r="${R}" stroke="rgba(255,255,255,0.06)" stroke-width="12" fill="none"/>
         <circle cx="190" cy="190" r="${R}"
-          stroke="${ringColor}" stroke-width="12" fill="none"
+          stroke="${color}" stroke-width="12" fill="none"
           stroke-linecap="round"
           stroke-dasharray="${C}"
           stroke-dashoffset="${offset}"
@@ -595,29 +595,29 @@ function renderHome(d) {
       </svg>
       <div class="ring-center">
         <div class="ring-sub">Saldo restante para ${dias} dias</div>
-        <div class="ring-val" style="color:${isOver?'#ef4444':'#ffffff'}">${saldoFmt}</div>
-        <div class="ring-status">${isOver ? 'Acima da receita do mês' : ''}</div>
+        <div class="ring-val" style="color:${color}">${saldoFmt}</div>
+        <div class="ring-status" style="color:rgba(255,255,255,0.35)">${isOver ? 'Acima da receita do mês' : ''}</div>
       </div>
     </div>
 
     <div class="home-rows">
       <div class="home-row">
         <div class="home-row-left">
-          <div class="home-row-dot"></div>
+          <div class="home-row-dot" style="background:rgba(255,255,255,0.3)"></div>
           <span class="home-row-label">Receita</span>
         </div>
-        <span class="home-row-val">R$${fmt(d.receita)}</span>
+        <span class="home-row-val">R$ ${fmt(d.receita)}</span>
       </div>
       <div class="home-row">
         <div class="home-row-left">
-          <div class="home-row-dot"></div>
+          <div class="home-row-dot" style="background:${color}"></div>
           <span class="home-row-label">Gastos</span>
         </div>
-        <span class="home-row-val">R$${fmt(d.totalGasto)}</span>
+        <span class="home-row-val" style="color:${color}">R$ ${fmt(d.totalGasto)}</span>
       </div>
       <div class="home-row">
         <div class="home-row-left">
-          <div class="home-row-dot"></div>
+          <div class="home-row-dot" style="background:rgba(255,255,255,0.3)"></div>
           <span class="home-row-label">Meta de Economia</span>
         </div>
         <span class="home-row-val">${metaVal}</span>
