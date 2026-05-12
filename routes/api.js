@@ -87,37 +87,40 @@ router.post('/chat/clear', (req, res) => {
 });
 
 // ─── POST /api/simulate ────────────────────────────────────
-// Simula o impacto de um gasto no mês
 router.post('/simulate', async (req, res) => {
   const { valor, descricao } = req.body;
   if (!valor) return res.status(400).json({ error: 'Campo "valor" obrigatório.' });
 
   try {
     const ctx = await getCtx();
-    const saldoAposGasto = ctx.saldoRestante - valor;
     const hoje = new Date().getDate();
     const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
     const diasRestantes = diasNoMes - hoje;
-    const novoLimiteDiario = saldoAposGasto > 0 ? Math.round(saldoAposGasto / diasRestantes) : 0;
-    const pctUsado = Math.min(100, Math.round(((ctx.totalGasto + valor) / ctx.receita) * 100));
+
+    const saldoAntes   = ctx.saldoRestante;
+    const saldoDepois  = saldoAntes - valor;
+    const limiteAntes  = saldoAntes  > 0 ? Math.round(saldoAntes  / diasRestantes) : 0;
+    const limiteDepois = saldoDepois > 0 ? Math.round(saldoDepois / diasRestantes) : 0;
+    const cortePorDia  = Math.round(valor / diasRestantes);
+    const pctUsado     = Math.round(((ctx.totalGasto + valor) / ctx.receita) * 100);
+
+    let status;
+    if (saldoDepois >= ctx.receita * 0.1)  status = 'ok';
+    else if (saldoDepois >= 0)             status = 'warning';
+    else                                   status = 'danger';
+
+    const topCats = Object.entries(ctx.categorias || {})
+      .filter(([, v]) => v > 0)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+      .map(([nome, val]) => ({ nome, val: Math.round(val), corte: Math.round(val * 0.2) }));
 
     res.json({
-      descricao,
-      valor,
-      saldoAntes: ctx.saldoRestante,
-      saldoDepois: saldoAposGasto,
-      novoLimiteDiario,
-      pctUsado,
-      cenarios: {
-        otimista: Math.round(saldoAposGasto * 0.9),
-        realista: Math.round(saldoAposGasto * 0.65),
-        conservador: Math.round(saldoAposGasto * 0.4),
-      },
-      alerta: saldoAposGasto < 0
-        ? 'danger'
-        : pctUsado > 90
-        ? 'warning'
-        : 'ok',
+      descricao, valor,
+      saldoAntes, saldoDepois,
+      limiteAntes, limiteDepois,
+      cortePorDia, diasRestantes,
+      pctUsado, status, topCats,
     });
   } catch (err) {
     console.error('/api/simulate error:', err.message);
