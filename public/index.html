@@ -232,102 +232,76 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .menu-card-label { font-size: 20px; font-weight: 800; letter-spacing: 0.4px; }
 
 /* ══════════════════════════════════════════════════
-   SUB PAGES — shared styles
+   SUB PAGES — clean list layout (Nubank/Wise style)
 ══════════════════════════════════════════════════ */
-.sub-page { padding: 16px 16px calc(var(--nav-h) + var(--nav-bottom) + 48px); gap: 12px; }
+.sub-page { padding: 0 20px calc(var(--nav-h) + var(--nav-bottom) + 64px); }
 
-.sec {
-  background: #121212; border: 1px solid var(--border);
-  border-radius: 20px; overflow: hidden;
+/* Section label — small uppercase header */
+.s-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--t3);
+  padding: 28px 0 0;
+  margin-bottom: 4px;
 }
-.sec-head { padding: 18px 18px 0; font-size: 15px; font-weight: 700; }
-.sec-sub { font-size: 12px; color: var(--t2); font-weight: 400; margin-top: 3px; }
 
-/* ── Gastos ── */
-.cat-list { padding: 10px 0 4px; }
-.cat-item { display: flex; align-items: center; padding: 10px 18px; gap: 12px; min-height: 52px; }
-.cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.cat-info { flex: 1; min-width: 0; }
-.cat-name { font-size: 14px; font-weight: 500; }
-.cat-bar-wrap { height: 3px; background: rgba(255,255,255,.07); border-radius: 20px; overflow: hidden; margin-top: 5px; }
-.cat-bar { height: 100%; border-radius: 20px; }
-.cat-right { text-align: right; flex-shrink: 0; }
-.cat-val { font-size: 13px; font-weight: 700; }
-.cat-pct { font-size: 11px; color: var(--t2); margin-top: 1px; }
+/* Hero number block */
+.s-hero { padding: 8px 0 20px; border-bottom: 1px solid var(--border); }
+.s-hero-val { font-size: 40px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; }
+.s-hero-sub { font-size: 13px; color: var(--t2); margin-top: 6px; }
 
-.tx-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 18px; border-bottom: 1px solid var(--border); }
-.tx-row:last-child { border-bottom: none; }
-.tx-left { flex: 1; min-width: 0; }
-.tx-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tx-cat { font-size: 11px; color: var(--t2); margin-top: 2px; }
-.tx-val { font-size: 14px; font-weight: 800; color: var(--red); flex-shrink: 0; margin-left: 12px; }
+/* List rows */
+.l-row {
+  display: flex; align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.l-row:last-child { border-bottom: none; }
+.l-left { flex: 1; min-width: 0; }
+.l-title { font-size: 15px; font-weight: 500; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.l-sub { font-size: 12px; color: var(--t2); margin-top: 3px; }
+.l-bar { height: 2px; background: rgba(255,255,255,.07); border-radius: 20px; overflow: hidden; margin-top: 8px; }
+.l-bar-fill { height: 100%; border-radius: 20px; }
+.l-right { text-align: right; flex-shrink: 0; }
+.l-val { font-size: 15px; font-weight: 700; }
+.l-val-sub { font-size: 12px; color: var(--t2); margin-top: 2px; }
+.l-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-/* ── Investimentos ── */
-.inv-hero { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
-.inv-total-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); margin-bottom: 6px; }
-.inv-total-val { font-size: 36px; font-weight: 900; letter-spacing: -1.2px; color: var(--t1); }
-.inv-growth { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--green); background: rgba(34,197,94,.1); padding: 3px 8px; border-radius: 8px; margin-top: 8px; }
-.inv-items { padding: 4px 0; }
-.inv-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border); }
-.inv-row:last-child { border-bottom: none; }
-.inv-label { font-size: 14px; color: var(--t2); }
-.inv-val { font-size: 15px; font-weight: 700; }
+/* Status badge */
+.s-badge-ok      { display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--green); }
+.s-badge-warn    { display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--orange); }
+.s-badge-danger  { display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--red); }
+.s-badge-ok::before    { content:''; width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0; }
+.s-badge-warn::before  { content:''; width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0; }
+.s-badge-danger::before{ content:''; width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0; }
 
-/* ── Objetivos ── */
-.goal-list { padding: 4px 0 8px; }
-.goal-item { padding: 16px 18px; border-bottom: 1px solid var(--border); }
-.goal-item:last-child { border-bottom: none; }
-.goal-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-.goal-name { font-size: 14px; font-weight: 700; }
-.goal-meta { font-size: 12px; color: var(--t2); }
-.goal-track { height: 7px; background: rgba(255,255,255,.07); border-radius: 20px; overflow: hidden; }
-.goal-fill { height: 100%; border-radius: 20px; transition: width .7s ease; }
-
-/* ── Simulação ── */
-.form-sec { background: #121212; border: 1px solid var(--border); border-radius: 20px; padding: 20px; }
-.form-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
-.f-lbl { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--t2); margin-bottom: 7px; margin-top: 16px; }
+/* Simulação */
+.f-lbl { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--t3); margin-bottom: 8px; margin-top: 24px; }
 .f-lbl:first-of-type { margin-top: 0; }
-.f-inp { width: 100%; padding: 13px 15px; background: #1a1a1a; border: 1.5px solid var(--border); border-radius: 14px; color: var(--t1); font-size: 15px; outline: none; font-family: inherit; }
-.f-inp:focus { border-color: rgba(255,255,255,.2); }
-.f-btn { width: 100%; margin-top: 20px; padding: 15px; background: #ffffff; color: #000; border: none; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.f-inp { width: 100%; padding: 16px 0; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--t1); font-size: 22px; font-weight: 600; outline: none; font-family: inherit; letter-spacing: -.3px; }
+.f-inp::placeholder { color: var(--t3); font-weight: 400; font-size: 18px; }
+.f-inp:focus { border-bottom-color: rgba(255,255,255,.3); }
+.f-btn { width: 100%; margin-top: 32px; padding: 16px; background: #ffffff; color: #000; border: none; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .f-btn:active { opacity: .8; }
-.sim-status { border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
-.sim-status.ok      { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.2); }
-.sim-status.warning { background: rgba(249,115,22,.1); border: 1px solid rgba(249,115,22,.2); }
-.sim-status.danger  { background: rgba(244,63,94,.1);  border: 1px solid rgba(244,63,94,.2); }
-.sim-s-ico { font-size: 24px; flex-shrink: 0; }
-.sim-s-title { font-size: 15px; font-weight: 800; }
-.sim-status.ok      .sim-s-title { color: var(--green); }
-.sim-status.warning .sim-s-title { color: var(--orange); }
-.sim-status.danger  .sim-s-title { color: var(--red); }
-.sim-s-sub { font-size: 12px; color: var(--t2); margin-top: 2px; }
-.sim-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.sim-col { background: #1a1a1a; border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
-.sim-col-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--t3); margin-bottom: 6px; }
-.sim-col-val { font-size: 19px; font-weight: 800; letter-spacing: -.4px; }
-.sim-col-sub { font-size: 11px; color: var(--t2); margin-top: 3px; }
-.sim-cut { background: #1a1a1a; border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
-.sim-cut-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--t2); margin-bottom: 8px; }
-.sim-cut-val { font-size: 24px; font-weight: 900; letter-spacing: -.7px; color: var(--orange); }
-.sim-cut-sub { font-size: 13px; color: var(--t2); margin-top: 4px; }
-.sim-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--border); }
-.sim-cat-row:last-child { border-bottom: none; }
-.sim-cat-name { font-size: 13px; color: var(--t1); }
-.sim-cat-corte { font-size: 13px; font-weight: 700; color: var(--orange); }
 
-/* ── Ajustes ── */
-.adj-sec { background: #121212; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
-.adj-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+/* Simulação result */
+.sim-verdict { padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sim-verdict-val { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+.sim-verdict-label { font-size: 14px; color: var(--t2); }
+
+/* Ajustes */
+.adj-row { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--border); }
 .adj-row:last-child { border-bottom: none; }
-.adj-label { font-size: 14px; font-weight: 600; }
+.adj-label { font-size: 15px; font-weight: 500; }
 .adj-val { font-size: 13px; color: var(--t2); }
-.adj-badge-ok  { font-size: 11px; font-weight: 700; color: var(--green); background: rgba(34,197,94,.1); padding: 3px 8px; border-radius: 8px; }
-.sched-ico-wrap { width: 36px; height: 36px; background: #1a1a1a; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-.adj-left { display: flex; align-items: center; gap: 12px; }
-.adj-sub { font-size: 11px; color: var(--t2); margin-top: 2px; }
-.tg-btn { display: inline-flex; padding: 11px 20px; background: #229ed9; color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 2px; }
-.tg-st { font-size: 12px; color: var(--t2); margin-top: 8px; min-height: 16px; }
+.adj-badge-ok { font-size: 11px; font-weight: 700; color: var(--green); }
+.adj-left { display: flex; align-items: center; gap: 14px; }
+.adj-sub { font-size: 12px; color: var(--t2); margin-top: 3px; }
+.sched-ico-wrap { width: 40px; height: 40px; background: #161616; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.tg-btn { display: inline-flex; padding: 12px 22px; background: #229ed9; color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.tg-st { font-size: 13px; color: var(--t2); margin-top: 10px; min-height: 18px; }
+.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: rgba(255,255,255,0.5); }
 
 /* Loading */
 .loading { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--t2); font-size: 13px; }
@@ -421,65 +395,65 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 
     <!-- SUB: GASTOS -->
     <div id="view-gastos" class="panel sub-page">
-      <div class="sec">
-        <div class="sec-head">Por categoria<div class="sec-sub" id="cat-sub"></div></div>
-        <div class="cat-list" id="cat-list"></div>
-      </div>
-      <div class="sec">
-        <div class="sec-head">Top 10 compras<div class="sec-sub">Maiores valores do mês</div></div>
-        <div id="top10-list"></div>
-      </div>
+      <div id="gastos-body"></div>
     </div>
 
     <!-- SUB: INVESTIMENTOS -->
     <div id="view-investimentos" class="panel sub-page">
-      <div class="sec">
-        <div class="inv-hero" id="inv-hero"></div>
-        <div class="inv-items" id="inv-items"></div>
-      </div>
+      <div id="inv-body"></div>
     </div>
 
     <!-- SUB: OBJETIVOS -->
     <div id="view-objetivos" class="panel sub-page">
-      <div class="sec">
-        <div class="sec-head">Objetivos<div class="sec-sub">Progresso acumulado</div></div>
-        <div id="obj-list"></div>
-      </div>
+      <div id="obj-body"></div>
     </div>
 
     <!-- SUB: SIMULAÇÃO -->
     <div id="view-simulacao" class="panel sub-page">
-      <div class="form-sec">
-        <div class="form-title">🧮 Simular um gasto</div>
-        <label class="f-lbl">Descrição</label>
-        <input class="f-inp" id="sim-desc" placeholder="ex: Viagem para Gramado"/>
-        <label class="f-lbl">Valor (R$)</label>
-        <input class="f-inp" id="sim-val" type="number" placeholder="500"/>
-        <button class="f-btn" onclick="runSim()">Simular impacto</button>
-      </div>
+      <div class="s-label" style="margin-top:8px">Quanto vai gastar?</div>
+      <label class="f-lbl" style="margin-top:20px">Descrição</label>
+      <input class="f-inp" id="sim-desc" placeholder="ex: Viagem para Gramado"/>
+      <label class="f-lbl">Valor</label>
+      <input class="f-inp" id="sim-val" type="number" placeholder="R$ 0"/>
+      <button class="f-btn" onclick="runSim()">Ver impacto</button>
       <div id="sim-result"></div>
     </div>
 
     <!-- SUB: AJUSTES -->
     <div id="view-ajustes" class="panel sub-page">
-      <div class="adj-sec">
-        <div class="adj-row"><div><div class="adj-label">🤖 Bot do Telegram</div><div class="adj-sub">Envia resumos e alertas diários</div></div><div></div></div>
-        <div class="adj-row" style="flex-direction:column;align-items:flex-start;gap:10px">
-          <button class="tg-btn" onclick="testTelegram()">📨 Enviar teste</button>
-          <div class="tg-st" id="tg-st"></div>
+
+      <div class="s-label" style="margin-top:8px">Telegram</div>
+      <div class="adj-row">
+        <div class="adj-left">
+          <div class="sched-ico-wrap">🤖</div>
+          <div><div class="adj-label">Bot do grupo</div><div class="adj-sub">Resumos e alertas diários</div></div>
         </div>
       </div>
-      <div class="adj-sec">
-        <div class="adj-row"><div class="adj-left"><div class="sched-ico-wrap">📊</div><div><div class="adj-label">Resumo diário</div><div class="adj-sub">Todo dia às 21:00</div></div></div><span class="adj-badge-ok">Ativo</span></div>
-        <div class="adj-row"><div class="adj-left"><div class="sched-ico-wrap">⚠️</div><div><div class="adj-label">Verificação</div><div class="adj-sub">Todo dia às 12:00</div></div></div><span class="adj-badge-ok">Ativo</span></div>
-        <div class="adj-row"><div class="adj-left"><div class="sched-ico-wrap">📅</div><div><div class="adj-label">Relatório semanal</div><div class="adj-sub">Segunda às 09:00</div></div></div><span class="adj-badge-ok">Ativo</span></div>
+      <div class="adj-row" style="flex-direction:column;align-items:flex-start;gap:10px;border-bottom:none">
+        <button class="tg-btn" onclick="testTelegram()">Enviar mensagem teste</button>
+        <div class="tg-st" id="tg-st"></div>
       </div>
-      <div class="adj-sec">
-        <div class="adj-row"><span class="adj-label" style="font-family:monospace;font-size:12px;color:#c4b5fd">ANTHROPIC_API_KEY</span><span class="adj-badge-ok">✓</span></div>
-        <div class="adj-row"><span class="adj-label" style="font-family:monospace;font-size:12px;color:#c4b5fd">TELEGRAM_BOT_TOKEN</span><span class="adj-badge-ok">✓</span></div>
-        <div class="adj-row"><span class="adj-label" style="font-family:monospace;font-size:12px;color:#c4b5fd">GOOGLE_SERVICE_ACCOUNT</span><span class="adj-badge-ok">✓</span></div>
-        <div class="adj-row"><span class="adj-label" style="font-family:monospace;font-size:12px;color:#c4b5fd">SPREADSHEET_ID</span><span class="adj-badge-ok">✓</span></div>
+
+      <div class="s-label">Alertas agendados</div>
+      <div class="adj-row">
+        <div class="adj-left"><div class="sched-ico-wrap">📊</div><div><div class="adj-label">Resumo diário</div><div class="adj-sub">Todo dia às 21:00</div></div></div>
+        <span class="adj-badge-ok">Ativo</span>
       </div>
+      <div class="adj-row">
+        <div class="adj-left"><div class="sched-ico-wrap">⚠️</div><div><div class="adj-label">Verificação de alertas</div><div class="adj-sub">Todo dia às 12:00</div></div></div>
+        <span class="adj-badge-ok">Ativo</span>
+      </div>
+      <div class="adj-row">
+        <div class="adj-left"><div class="sched-ico-wrap">📅</div><div><div class="adj-label">Relatório semanal</div><div class="adj-sub">Segunda-feira às 09:00</div></div></div>
+        <span class="adj-badge-ok">Ativo</span>
+      </div>
+
+      <div class="s-label">Variáveis de ambiente</div>
+      <div class="adj-row"><span class="mono">ANTHROPIC_API_KEY</span><span class="adj-badge-ok">✓ OK</span></div>
+      <div class="adj-row"><span class="mono">TELEGRAM_BOT_TOKEN</span><span class="adj-badge-ok">✓ OK</span></div>
+      <div class="adj-row"><span class="mono">GOOGLE_SERVICE_ACCOUNT</span><span class="adj-badge-ok">✓ OK</span></div>
+      <div class="adj-row" style="border-bottom:none"><span class="mono">SPREADSHEET_ID</span><span class="adj-badge-ok">✓ OK</span></div>
+
     </div>
 
   </div>
@@ -632,57 +606,80 @@ function renderGastos() {
   const cats = Object.entries(dashData.categorias||{}).sort(([,a],[,b])=>b-a);
   const total = cats.reduce((s,[,v])=>s+v,0)||1;
   const max = cats[0]?.[1]||1;
-  document.getElementById('cat-sub').textContent = `${cats.length} categorias · ${dashData.mes} 2026`;
-  document.getElementById('cat-list').innerHTML = cats.map(([nome,val],i)=>`
-    <div class="cat-item">
-      <div class="cat-dot" style="background:${CAT_COLORS[i%8]}"></div>
-      <div class="cat-info">
-        <div class="cat-name">${esc(nome)}</div>
-        <div class="cat-bar-wrap"><div class="cat-bar" style="width:${Math.round(val/max*100)}%;background:${CAT_COLORS[i%8]}"></div></div>
-      </div>
-      <div class="cat-right">
-        <div class="cat-val">R$ ${fmt(val)}</div>
-        <div class="cat-pct">${Math.round(val/total*100)}%</div>
-      </div>
-    </div>`).join('');
-
-  const top10 = [...cats].slice(0,10);
-  document.getElementById('top10-list').innerHTML = top10.map(([nome,val],i)=>`
-    <div class="tx-row">
-      <div class="tx-left">
-        <div class="tx-name">${esc(nome)}</div>
-        <div class="tx-cat">#${i+1} maior categoria</div>
-      </div>
-      <div class="tx-val">R$ ${fmt(val)}</div>
-    </div>`).join('');
+  document.getElementById('gastos-body').innerHTML = `
+    <div class="s-hero">
+      <div class="s-hero-val">R$ ${fmt(total)}</div>
+      <div class="s-hero-sub">${cats.length} categorias · ${dashData.mes} 2026</div>
+    </div>
+    <div class="s-label">Por categoria</div>
+    ${cats.map(([nome,val],i)=>`
+      <div class="l-row">
+        <div class="l-dot" style="background:${CAT_COLORS[i%8]}"></div>
+        <div class="l-left">
+          <div class="l-title">${esc(nome)}</div>
+          <div class="l-bar"><div class="l-bar-fill" style="width:${Math.round(val/max*100)}%;background:${CAT_COLORS[i%8]}"></div></div>
+        </div>
+        <div class="l-right">
+          <div class="l-val">R$ ${fmt(val)}</div>
+          <div class="l-val-sub">${Math.round(val/total*100)}%</div>
+        </div>
+      </div>`).join('')}`;
 }
 
 function renderInvestimentos() {
   if (!dashData) return;
   const inv = dashData.investimentosDetalhe || {};
-  document.getElementById('inv-hero').innerHTML = `
-    <div class="inv-total-lbl">Total investido</div>
-    <div class="inv-total-val">R$ ${fmt(inv.total||0)}</div>
-    ${inv.crescimento>0?`<div class="inv-growth">↑ ${inv.crescimento}% este mês</div>`:''}`;
-  document.getElementById('inv-items').innerHTML = [
-    {l:'ETF',v:inv.etf},{l:'Renda Fixa',v:inv.rendaFixa},{l:'Cripto',v:inv.cripto},{l:'MedPago',v:inv.medPago}
-  ].map(it=>`
-    <div class="inv-row">
-      <span class="inv-label">${it.l}</span>
-      <span class="inv-val">R$ ${fmt(it.v)}</span>
-    </div>`).join('');
+  const items = [
+    {l:'ETF', v:inv.etf, color:'#8b5cf6'},
+    {l:'Renda Fixa', v:inv.rendaFixa, color:'#22c55e'},
+    {l:'Cripto', v:inv.cripto, color:'#f97316'},
+    {l:'MedPago', v:inv.medPago, color:'#06b6d4'}
+  ].filter(it => (it.v||0) > 0);
+  const totalInv = items.reduce((s,it)=>s+(it.v||0),0)||1;
+  document.getElementById('inv-body').innerHTML = `
+    <div class="s-hero">
+      <div class="s-hero-val">R$ ${fmt(inv.total||0)}</div>
+      <div class="s-hero-sub">${inv.crescimento>0?`↑ ${inv.crescimento}% este mês`:'Total investido'}</div>
+    </div>
+    <div class="s-label">Alocação</div>
+    ${items.length ? items.map(it=>`
+      <div class="l-row">
+        <div class="l-dot" style="background:${it.color}"></div>
+        <div class="l-left">
+          <div class="l-title">${it.l}</div>
+          <div class="l-bar"><div class="l-bar-fill" style="width:${Math.round((it.v||0)/totalInv*100)}%;background:${it.color}"></div></div>
+        </div>
+        <div class="l-right">
+          <div class="l-val">R$ ${fmt(it.v)}</div>
+          <div class="l-val-sub">${Math.round((it.v||0)/totalInv*100)}%</div>
+        </div>
+      </div>`).join('')
+    : '<div class="empty-state">Sem dados de investimentos</div>'}`;
 }
 
 function renderObjetivos() {
   if (!dashData) return;
   const objs = dashData.objetivosDetalhe || [];
-  document.getElementById('obj-list').innerHTML = objs.some(o=>o.pct>0)
-    ? `<div class="goal-list">${objs.map((o,i)=>`
-        <div class="goal-item">
-          <div class="goal-top"><span class="goal-name">${esc(o.nome)}</span><span class="goal-meta">${o.pct>0?`R$ ${fmt(o.valor)} · ${o.pct}%`:'sem dados'}</span></div>
-          <div class="goal-track"><div class="goal-fill" style="width:${Math.min(100,o.pct||0)}%;background:${GOAL_COLORS[i]||'#8b5cf6'}"></div></div>
-        </div>`).join('')}</div>`
-    : '<div class="empty-state">Sem dados de objetivos para este mês</div>';
+  const com = objs.filter(o=>o.pct>0);
+  document.getElementById('obj-body').innerHTML = `
+    <div class="s-hero">
+      <div class="s-hero-val">${com.length} / ${objs.length}</div>
+      <div class="s-hero-sub">objetivos com progresso</div>
+    </div>
+    <div class="s-label">Progresso</div>
+    ${objs.length ? objs.map((o,i)=>`
+      <div class="l-row">
+        <div class="l-dot" style="background:${GOAL_COLORS[i%3]}"></div>
+        <div class="l-left">
+          <div class="l-title">${esc(o.nome)}</div>
+          <div class="l-bar"><div class="l-bar-fill" style="width:${Math.min(100,o.pct||0)}%;background:${GOAL_COLORS[i%3]}"></div></div>
+        </div>
+        <div class="l-right">
+          <div class="l-val" style="color:${GOAL_COLORS[i%3]}">${o.pct||0}%</div>
+          <div class="l-val-sub">${o.valor>0?'R$ '+fmt(o.valor):'—'}</div>
+        </div>
+      </div>`).join('')
+    : '<div class="empty-state">Sem dados de objetivos para este mês</div>'}`;
 }
 
 // ── Chat ─────────────────────────────────────────────────────
@@ -735,22 +732,46 @@ async function runSim() {
   try {
     const res=await fetch(API+'/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({valor:val,descricao:desc})});
     const d=await res.json();
-    const sIco={ok:'✅',warning:'⚠️',danger:'🚨'}[d.status];
+    const sColor={ok:'#22c55e',warning:'#f97316',danger:'#ef4444'}[d.status];
     const sTit={ok:'Cabe no orçamento',warning:'Aperta o orçamento',danger:'Estoura o orçamento'}[d.status];
     document.getElementById('sim-result').innerHTML=`
-      <div class="sim-status ${d.status}"><div class="sim-s-ico">${sIco}</div><div><div class="sim-s-title">${sTit}</div><div class="sim-s-sub">${esc(desc)} · R$ ${fmt(val)}</div></div></div>
-      <div class="sim-compare">
-        <div class="sim-col"><div class="sim-col-lbl">Saldo hoje</div><div class="sim-col-val" style="color:${d.saldoAntes>=0?'#22c55e':'#ef4444'}">${d.saldoAntes<0?'-':''}R$ ${fmt(Math.abs(d.saldoAntes))}</div><div class="sim-col-sub">antes do gasto</div></div>
-        <div class="sim-col"><div class="sim-col-lbl">Saldo após</div><div class="sim-col-val" style="color:${d.saldoDepois>=0?'#22c55e':'#ef4444'}">${d.saldoDepois<0?'-':''}R$ ${fmt(Math.abs(d.saldoDepois))}</div><div class="sim-col-sub">após o gasto</div></div>
-        <div class="sim-col"><div class="sim-col-lbl">Limite/dia hoje</div><div class="sim-col-val">${d.limiteAntes>0?'R$ '+fmt(d.limiteAntes):'—'}</div><div class="sim-col-sub">por dia restante</div></div>
-        <div class="sim-col"><div class="sim-col-lbl">Limite/dia após</div><div class="sim-col-val" style="color:${d.limiteDepois>0?'#ffffff':'#ef4444'}">${d.limiteDepois>0?'R$ '+fmt(d.limiteDepois):'—'}</div><div class="sim-col-sub">por dia restante</div></div>
+      <div class="sim-verdict">
+        <div class="sim-verdict-val" style="color:${sColor}">${sTit}</div>
+        <div class="sim-verdict-label">${esc(desc)} · R$ ${fmt(val)}</div>
       </div>
-      <div class="sim-cut"><div class="sim-cut-lbl">Para compensar</div><div class="sim-cut-val">R$ ${fmt(d.cortePorDia)}/dia a menos</div><div class="sim-cut-sub">nos próximos ${d.diasRestantes} dias do mês</div></div>
-      <div class="sec"><div class="sec-head" style="padding-bottom:4px">Onde cortar?<div class="sec-sub">20% das maiores categorias</div></div><div>${d.topCats.map(c=>`<div class="sim-cat-row"><span class="sim-cat-name">${esc(c.nome)}</span><span class="sim-cat-corte">−R$ ${fmt(c.corte)}</span></div>`).join('')}</div></div>`;
+      <div class="s-label">Impacto</div>
+      <div class="l-row">
+        <div class="l-left"><div class="l-title">Saldo antes</div></div>
+        <div class="l-right"><div class="l-val" style="color:${d.saldoAntes>=0?'#22c55e':'#ef4444'}">${d.saldoAntes<0?'-':''}R$ ${fmt(Math.abs(d.saldoAntes))}</div></div>
+      </div>
+      <div class="l-row">
+        <div class="l-left"><div class="l-title">Saldo após</div></div>
+        <div class="l-right"><div class="l-val" style="color:${d.saldoDepois>=0?'#22c55e':'#ef4444'}">${d.saldoDepois<0?'-':''}R$ ${fmt(Math.abs(d.saldoDepois))}</div></div>
+      </div>
+      <div class="l-row">
+        <div class="l-left"><div class="l-title">Limite/dia antes</div></div>
+        <div class="l-right"><div class="l-val">${d.limiteAntes>0?'R$ '+fmt(d.limiteAntes):'—'}</div></div>
+      </div>
+      <div class="l-row">
+        <div class="l-left"><div class="l-title">Limite/dia após</div></div>
+        <div class="l-right"><div class="l-val" style="color:${d.limiteDepois>0?'#fff':'#ef4444'}">${d.limiteDepois>0?'R$ '+fmt(d.limiteDepois):'—'}</div></div>
+      </div>
+      <div class="s-label">Para compensar</div>
+      <div class="l-row">
+        <div class="l-left"><div class="l-title">Corte diário necessário</div><div class="l-sub">nos próximos ${d.diasRestantes} dias</div></div>
+        <div class="l-right"><div class="l-val">R$ ${fmt(d.cortePorDia)}/dia</div></div>
+      </div>
+      <div class="s-label">Onde cortar</div>
+      ${d.topCats.map(c=>`
+        <div class="l-row">
+          <div class="l-left"><div class="l-title">${esc(c.nome)}</div><div class="l-sub">20% de corte</div></div>
+          <div class="l-right"><div class="l-val" style="color:#f97316">−R$ ${fmt(c.corte)}</div></div>
+        </div>`).join('')}`;
   } catch {
     document.getElementById('sim-result').innerHTML='<p style="color:#ef4444;font-size:13px;padding:12px">Erro ao calcular.</p>';
   }
 }
+
 
 // ── Ajustes ──────────────────────────────────────────────────
 async function testTelegram() {
