@@ -26,7 +26,8 @@
   --purple-l:#c4b5fd;
   --green:   #22c55e;
   --orange:  #f97316;
-  --nav-h:   90px;
+  --nav-h:   72px;
+  --nav-bottom: calc(env(safe-area-inset-bottom, 0px) + 23px);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--bg); color: var(--t1); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
@@ -68,10 +69,14 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .panel {
   position: absolute; inset: 0;
   overflow-y: auto; -webkit-overflow-scrolling: touch;
-  display: none; flex-direction: column;
-  padding-bottom: calc(var(--nav-h) + 16px);
+  display: none;
+  padding-bottom: 0;
 }
-.panel.active { display: flex; }
+.panel.active { display: block; }
+
+/* Chat needs flex column layout */
+#view-chat { display: none; }
+#view-chat.active { display: flex; flex-direction: column; }
 ::-webkit-scrollbar { width: 0; }
 
 /* ── Floating Nav ───────────────────────────────── */
@@ -79,7 +84,7 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
   position: fixed;
   left: 50%; transform: translateX(-50%);
   z-index: 100;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 23px);
+  bottom: var(--nav-bottom);
 }
 .float-nav-inner {
   display: flex; align-items: center; justify-content: space-around;
@@ -107,9 +112,7 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
    HOME
 ══════════════════════════════════════════════════ */
 #view-home {
-  padding-top: 0;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 0 16px calc(var(--nav-h) + var(--nav-bottom) + 48px);
 }
 
 .home-title {
@@ -189,7 +192,7 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .chat-bar {
   flex-shrink: 0; display: flex; align-items: center; gap: 10px;
   padding: 10px 16px;
-  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 10px);
+  padding-bottom: calc(var(--nav-h) + var(--nav-bottom) + 10px);
   background: var(--bg); border-top: 1px solid var(--border);
 }
 .chat-inp { flex: 1; padding: 12px 16px; background: #1a1a1a; border: 1.5px solid var(--border); border-radius: 24px; color: var(--t1); font-size: 14px; outline: none; font-family: inherit; }
@@ -201,7 +204,7 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 /* ══════════════════════════════════════════════════
    MENU
 ══════════════════════════════════════════════════ */
-#view-menu { padding: 0 16px; }
+#view-menu { padding: 0 16px calc(var(--nav-h) + var(--nav-bottom) + 48px); }
 
 .menu-title {
   font-size: 32px; font-weight: 800; letter-spacing: -0.5px;
@@ -231,14 +234,14 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 /* ══════════════════════════════════════════════════
    SUB PAGES — shared styles
 ══════════════════════════════════════════════════ */
-.sub-page { padding: 0 16px 16px; gap: 10px; }
+.sub-page { padding: 16px 16px calc(var(--nav-h) + var(--nav-bottom) + 48px); gap: 12px; }
 
 .sec {
   background: #121212; border: 1px solid var(--border);
   border-radius: 20px; overflow: hidden;
 }
-.sec-head { padding: 18px 18px 0; font-size: 14px; font-weight: 700; }
-.sec-sub { font-size: 12px; color: var(--t2); font-weight: 400; margin-top: 2px; }
+.sec-head { padding: 18px 18px 0; font-size: 15px; font-weight: 700; }
+.sec-sub { font-size: 12px; color: var(--t2); font-weight: 400; margin-top: 3px; }
 
 /* ── Gastos ── */
 .cat-list { padding: 10px 0 4px; }
