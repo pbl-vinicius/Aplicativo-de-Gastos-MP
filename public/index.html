@@ -582,8 +582,6 @@ function renderHome(d) {
   const metaVal = d.metaEconomia > 0 ? `R$${fmt(d.metaEconomia)}` : '—';
 
   document.getElementById('home-body').innerHTML = `
-    <div class="home-title">Nosso dinheiro</div>
-
     <div class="ring-wrap">
       <svg class="ring-svg" viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="190" cy="190" r="${R}" stroke="rgba(255,255,255,0.06)" stroke-width="12" fill="none"/>
