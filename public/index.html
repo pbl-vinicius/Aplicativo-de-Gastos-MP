@@ -422,7 +422,13 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
     <!-- SUB: AJUSTES -->
     <div id="view-ajustes" class="panel sub-page">
 
-      <div class="s-label" style="margin-top:8px">Telegram</div>
+      <div class="s-label" style="margin-top:8px">Dados</div>
+      <div class="adj-row" style="flex-direction:column;align-items:flex-start;gap:10px;border-bottom:none">
+        <button class="tg-btn" style="background:#ffffff;color:#000" onclick="syncData()">Sincronizar planilha</button>
+        <div class="tg-st" id="sync-st"></div>
+      </div>
+
+      <div class="s-label">Telegram</div>
       <div class="adj-row">
         <div class="adj-left">
           <div class="sched-ico-wrap">🤖</div>
@@ -795,6 +801,18 @@ async function runSim() {
 
 
 // ── Ajustes ──────────────────────────────────────────────────
+async function syncData() {
+  const st = document.getElementById('sync-st');
+  st.textContent = 'Sincronizando...';
+  try {
+    await fetch(API+'/api/cache/clear', {method:'POST'});
+    dashData = null;
+    st.textContent = '✅ Sincronizado! Volte à home para ver.';
+  } catch {
+    st.textContent = '❌ Erro ao sincronizar.';
+  }
+}
+
 async function testTelegram() {
   document.getElementById('tg-st').textContent='Enviando...';
   try {

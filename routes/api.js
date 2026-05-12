@@ -140,6 +140,14 @@ router.post('/telegram/test', async (req, res) => {
   }
 });
 
+// ─── POST /api/cache/clear ────────────────────────────────
+// Força recarregamento da planilha na próxima requisição
+router.post('/cache/clear', (req, res) => {
+  ctxCache = null;
+  ctxCacheTime = 0;
+  res.json({ ok: true });
+});
+
 // ─── GET /api/health ──────────────────────────────────────
 // Verifica se o servidor está no ar
 router.get('/health', (req, res) => {
