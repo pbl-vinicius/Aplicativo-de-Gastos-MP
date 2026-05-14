@@ -491,7 +491,7 @@ const API = '';
 const CAT_COLORS = ['#8b5cf6','#a78bfa','#ec4899','#f97316','#ef4444','#f59e0b','#10b981','#06b6d4'];
 const GOAL_COLORS = ['#8b5cf6','#22c55e','#f97316'];
 const fmt  = n => Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtK = n => { n=Number(n||0); return n>=1000?'R$ '+(n/1000).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'k':'R$ '+fmt(n); };
+const fmtK = n => { n=Number(n||0); return n>=1000?'R$ '+(n/1000).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'k':'R$ '+fmt(n); };
 const esc  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 let dashData = null;
@@ -535,14 +535,15 @@ function showSubHdr() {
 
 // ── Home ─────────────────────────────────────────────────────
 async function loadHome() {
-  if (dashData) { renderHome(dashData); return; }
-  document.getElementById('home-body').innerHTML = '<div class="loading" style="flex:1"><div class="spinner"></div>Carregando...</div>';
+  // Mostra dados em cache imediatamente para não piscar, mas sempre busca dados frescos
+  if (dashData) renderHome(dashData);
+  else document.getElementById('home-body').innerHTML = '<div class="loading" style="flex:1"><div class="spinner"></div>Carregando...</div>';
   try {
     const res = await fetch(API+'/api/dashboard');
     dashData = await res.json();
     renderHome(dashData);
   } catch {
-    document.getElementById('home-body').innerHTML = '<div class="loading" style="color:#ef4444">Erro ao carregar</div>';
+    if (!dashData) document.getElementById('home-body').innerHTML = '<div class="loading" style="color:#ef4444">Erro ao carregar</div>';
   }
 }
 
@@ -559,7 +560,7 @@ function renderHome(d) {
   const offset = +(C * (1 - filled)).toFixed(1);
 
   const saldoFmt = (isOver ? '-R$' : 'R$') + fmt(Math.abs(d.saldoRestante));
-  const metaVal = d.metaEconomia > 0 ? `R$ ${fmt(d.metaEconomia)}` : '—';
+  const metaVal = d.metaEconomia > 0 ? `R$ ${fmt(d.metaEconomia)}` : '—';
 
   document.getElementById('home-body').innerHTML = `
     <div class="ring-wrap">
@@ -586,14 +587,14 @@ function renderHome(d) {
           <div class="home-row-dot" style="background:rgba(255,255,255,0.3)"></div>
           <span class="home-row-label">Receita</span>
         </div>
-        <span class="home-row-val">R$ ${fmt(d.receita)}</span>
+        <span class="home-row-val">R$ ${fmt(d.receita)}</span>
       </div>
       <div class="home-row">
         <div class="home-row-left">
           <div class="home-row-dot" style="background:${color}"></div>
           <span class="home-row-label">Gastos</span>
         </div>
-        <span class="home-row-val" style="color:${color}">R$ ${fmt(d.totalGasto)}</span>
+        <span class="home-row-val" style="color:${color}">R$ ${fmt(d.totalGasto)}</span>
       </div>
       <div class="home-row">
         <div class="home-row-left">

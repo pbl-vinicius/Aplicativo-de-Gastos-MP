@@ -12,7 +12,7 @@ const { enviarAlertaImediato, testarBot } = require('../services/telegram');
 // Cache simples para não bater na Sheets API a cada request
 let ctxCache = null;
 let ctxCacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+const CACHE_TTL = 1 * 60 * 1000; // 1 minuto
 
 async function getCtx() {
   if (ctxCache && Date.now() - ctxCacheTime < CACHE_TTL) return ctxCache;
