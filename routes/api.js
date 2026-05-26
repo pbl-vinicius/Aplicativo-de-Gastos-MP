@@ -9,6 +9,37 @@ const { getContextoCompleto, getDashboard } = require('../services/sheets');
 const { chat, clearHistory } = require('../services/claude');
 const { enviarAlertaImediato, testarBot } = require('../services/telegram');
 
+const CLOSING_DAY = 24;
+const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+// Retorna o mês de fatura vigente com base no dia de fechamento do cartão.
+// Ex: dia 25/05 → ciclo de junho (fechou dia 24/05).
+function getBillingMonth() {
+  const now = new Date();
+  const day = now.getDate();
+  const month = now.getMonth(); // 0-indexed
+  return day > CLOSING_DAY ? MESES[(month + 1) % 12] : MESES[month];
+}
+
+// Dias restantes até o fechamento do ciclo atual (inclusive o dia de hoje).
+function getDiasRestantes() {
+  const now = new Date();
+  const day = now.getDate();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+
+  let endMonth = month;
+  let endYear = year;
+  if (day > CLOSING_DAY) {
+    endMonth = month + 1;
+    if (endMonth === 12) { endMonth = 0; endYear = year + 1; }
+  }
+
+  const cycleEnd = new Date(endYear, endMonth, CLOSING_DAY);
+  const today    = new Date(year, month, day);
+  return Math.floor((cycleEnd - today) / 86400000) + 1;
+}
+
 // Cache simples para não bater na Sheets API a cada request
 let ctxCache = null;
 let ctxCacheTime = 0;
@@ -16,9 +47,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
 async function getCtx() {
   if (ctxCache && Date.now() - ctxCacheTime < CACHE_TTL) return ctxCache;
-  const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  const mesAtual = meses[new Date().getMonth()];
-  ctxCache = await getContextoCompleto(mesAtual);
+  ctxCache = await getContextoCompleto(getBillingMonth());
   ctxCacheTime = Date.now();
   return ctxCache;
 }
@@ -28,9 +57,7 @@ async function getCtx() {
 router.get('/dashboard', async (req, res) => {
   try {
     const ctx = await getCtx();
-    const hoje = new Date().getDate();
-    const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    const diasRestantes = diasNoMes - hoje;
+    const diasRestantes = getDiasRestantes();
     const limiteDiario = ctx.saldoRestante > 0 ? ctx.saldoRestante / diasRestantes : 0;
     const pctGasto = ctx.receita > 0 ? (ctx.totalGasto / ctx.receita) * 100 : 0;
 
@@ -94,9 +121,7 @@ router.post('/simulate', async (req, res) => {
 
   try {
     const ctx = await getCtx();
-    const hoje = new Date().getDate();
-    const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    const diasRestantes = diasNoMes - hoje;
+    const diasRestantes = getDiasRestantes();
 
     const saldoAntes   = ctx.saldoRestante;
     const saldoDepois  = saldoAntes - valor;
