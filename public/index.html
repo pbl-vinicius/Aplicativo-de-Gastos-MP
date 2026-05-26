@@ -144,6 +144,7 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .ring-sub   { font-size: 14px; font-weight: 500; color: var(--t2); }
 .ring-val   { font-size: 40px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
 .ring-status { font-size: 14px; color: var(--red-dim); }
+.ring-pill  { display:inline-block; margin-top:8px; padding:4px 12px; border-radius:20px; background:rgba(255,255,255,0.07); font-size:14px; font-weight:500; color:var(--t2); }
 
 .home-rows {
   display: flex; flex-direction: column; gap: 24px;
@@ -576,7 +577,7 @@ function renderHome(d) {
       <div class="ring-center">
         <div class="ring-sub">Saldo restante para ${dias} dias</div>
         <div class="ring-val" style="color:${color}">${saldoFmt}</div>
-        <div style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:2px">${isOver ? 'Acima da receita do mês' : 'R$ ' + fmt(d.limiteDiario) + '/dia'}</div>
+        <div class="ring-pill">${isOver ? 'Acima da receita do mês' : 'R$ ' + fmt(d.limiteDiario) + ' /dia'}</div>
       </div>
     </div>
 
