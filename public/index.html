@@ -549,7 +549,7 @@ async function loadHome() {
 function renderHome(d) {
   const isOver = d.saldoRestante < 0;
   const pct = d.pctGasto;
-  const dias = new Date(new Date().getFullYear(), new Date().getMonth()+1,0).getDate() - new Date().getDate();
+  const dias = d.diasRestantes;
 
   // Status color — green < 80%, orange 80-99%, red ≥ 100%
   const color = pct >= 100 ? '#ef4444' : pct >= 80 ? '#f97316' : '#22c55e';
