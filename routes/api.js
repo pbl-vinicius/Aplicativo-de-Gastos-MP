@@ -197,49 +197,6 @@ router.post('/simulate', async (req, res) => {
   }
 });
 
-// ─── POST /api/metas-forecast ────────────────────────────
-// Previsão inteligente de gastos por categoria via IA (Haiku).
-// Recebe { goals: { "Categoria": 500, ... } } — metas definidas pelo usuário.
-router.post('/metas-forecast', async (req, res) => {
-  try {
-    const userGoals = req.body?.goals || {};
-    const ctx = await getCtx();
-    const diasRestantes = getDiasRestantes();
-    const diasDecorridos = getDiasDecorridos();
-    const totalDias = diasDecorridos + diasRestantes - 1;
-
-    const gastoPorCategoria = {};
-    (ctx.transacoes || []).forEach(t => {
-      if (t.valor > 0 && t.categoria) {
-        const cat = t.categoria.trim();
-        gastoPorCategoria[cat] = (gastoPorCategoria[cat] || 0) + t.valor;
-      }
-    });
-
-    const catsParaAnalise = Object.keys(gastoPorCategoria)
-      .filter(nome => (gastoPorCategoria[nome] || 0) > 0)
-      .map(nome => {
-        const meta = userGoals[nome] || 0;
-        const gasto = gastoPorCategoria[nome] || 0;
-        const projecao = Math.round(gasto / diasDecorridos * totalDias);
-        return { nome, meta, gasto, projecao, riscoPct: meta > 0 ? projecao / meta : 0 };
-      })
-      .sort((a, b) => b.riscoPct - a.riscoPct)
-      .slice(0, 6);
-
-    if (!catsParaAnalise.length) {
-      return res.json({ geral: null, insights: [] });
-    }
-
-    const { gerarPrevisaoCategorias } = require('../services/claude');
-    const result = await gerarPrevisaoCategorias(catsParaAnalise, ctx.mesAtual, diasDecorridos, diasRestantes);
-    res.json(result);
-  } catch (err) {
-    console.error('/api/metas-forecast error:', err.message);
-    res.status(500).json({ error: 'Erro ao gerar previsão.' });
-  }
-});
-
 // ─── POST /api/telegram/test ──────────────────────────────
 // Envia mensagem de teste no Telegram
 router.post('/telegram/test', async (req, res) => {

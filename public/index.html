@@ -320,7 +320,6 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .goals-section { margin-top: 32px; }
 .goals-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
 .goals-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--t3); }
-.goals-ai-tag { font-size:11px; font-weight:600; color:var(--purple-l); background:rgba(139,92,246,0.13); padding:3px 10px; border-radius:20px; }
 .goal-item { padding:16px 0; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity .12s; }
 .goal-item:active { opacity:0.6; }
 .goal-item + .goal-item { border-top:1px solid var(--border); }
@@ -340,11 +339,6 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .goal-fc-dim  { font-size:12px; font-weight:500; color:var(--t3); }
 .goals-show-btn { width:100%; padding:13px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px; color:var(--t2); font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; margin-top:16px; }
 .goals-show-btn:active { opacity:0.7; }
-.goals-ai-block { margin-top:20px; padding:14px 16px; background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.18); border-radius:16px; }
-.goals-ai-hdr { font-size:11px; font-weight:700; color:var(--purple-l); letter-spacing:0.4px; margin-bottom:8px; text-transform:uppercase; }
-.goals-ai-txt { font-size:13px; color:var(--t2); line-height:1.55; }
-.goals-ai-sub { font-size:12px; color:var(--t3); margin-top:5px; line-height:1.5; }
-.goals-ai-sub b { color:var(--t2); font-weight:500; }
 .sk-line { border-radius:6px; background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.04) 100%); background-size:200% 100%; animation:sk 1.5s ease-in-out infinite; }
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 /* bottom sheet */
@@ -663,7 +657,6 @@ function renderHome(d) {
     ${renderGoals(d)}
   `;
 
-  loadGoalsForecast();
 }
 
 // ── Sub-page renderers ───────────────────────────────────────
@@ -1024,19 +1017,11 @@ function renderGoals(d) {
     ? `<button class="goals-show-btn" id="goals-show-btn" onclick="toggleMoreGoals(${total})">Ver todas as ${total} categorias</button>`
     : '';
 
-  const hasAnyGoal = items.some(it => it.meta > 0);
-
   return `<div class="goals-section">
     <div class="goals-hdr">
       <span class="goals-lbl">Metas do mês</span>
-      <span class="goals-ai-tag">✦ Previsão IA</span>
     </div>
     ${itemsHtml}
-    ${hasAnyGoal ? `<div class="goals-ai-block" id="goals-ai-block">
-      <div class="goals-ai-hdr">✦ IA</div>
-      <div class="sk-line" style="height:13px;width:82%"></div>
-      <div class="sk-line" style="height:13px;width:60%;margin-top:7px"></div>
-    </div>` : ''}
     ${showMoreHtml}
   </div>`;
 }
@@ -1050,38 +1035,6 @@ function toggleMoreGoals(total) {
   if (btn) btn.textContent = goalsExpanded ? 'Mostrar menos' : `Ver todas as ${total} categorias`;
 }
 
-async function loadGoalsForecast() {
-  const metasLocais = getMetasLocais();
-  if (!Object.keys(metasLocais).length) {
-    const block = document.getElementById('goals-ai-block');
-    if (block) block.innerHTML = '';
-    return;
-  }
-  try {
-    const res = await fetch(API + '/api/metas-forecast', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goals: metasLocais }),
-    });
-    if (!res.ok) throw new Error('http ' + res.status);
-    const data = await res.json();
-    const block = document.getElementById('goals-ai-block');
-    if (!block) return;
-    if (!data.geral && !(data.insights && data.insights.length)) {
-      block.innerHTML = '';
-      return;
-    }
-    const subsHtml = (data.insights || []).slice(0, 3)
-      .map(ins => `<div class="goals-ai-sub">· <b>${esc(ins.categoria)}</b>: ${esc(ins.msg)}</div>`)
-      .join('');
-    block.innerHTML = `<div class="goals-ai-hdr">✦ IA diz</div>
-      <div class="goals-ai-txt">${esc(data.geral || '')}</div>
-      ${subsHtml}`;
-  } catch {
-    const block = document.getElementById('goals-ai-block');
-    if (block) block.innerHTML = '';
-  }
-}
 
 // ── Boot ─────────────────────────────────────────────────────
 loadHome();
