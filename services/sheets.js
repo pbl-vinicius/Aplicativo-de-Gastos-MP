@@ -147,13 +147,13 @@ async function getExtrato(mesIndex = 4) {
 
   const transacoes = [];
   rows.forEach(row => {
-    const data = row[0];
-    const descricao = row[1];
-    const valor = parseBRL(row[2]);
-    const tipo = row[3];
-    const categoria = row[4];
+    const data      = row[0]; // BF — data (vazia para despesas fixas)
+    const descricao = row[1]; // BG — descrição
+    const valor     = parseBRL(row[2]); // BH — valor
+    const tipo      = row[3]; // BI
+    const categoria = row[4]; // BJ
 
-    if (data && descricao && valor) {
+    if (descricao && valor) { // data pode ser vazia (despesas fixas não têm data)
       transacoes.push({ data, descricao, valor, tipo, categoria });
     }
   });
