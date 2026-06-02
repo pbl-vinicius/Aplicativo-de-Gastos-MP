@@ -320,7 +320,6 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .goals-section { margin-top: 32px; }
 .goals-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
 .goals-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--t3); }
-.goals-ai-tag { font-size:11px; font-weight:600; color:var(--purple-l); background:rgba(139,92,246,0.13); padding:3px 10px; border-radius:20px; }
 .goal-item { padding:16px 0; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity .12s; }
 .goal-item:active { opacity:0.6; }
 .goal-item + .goal-item { border-top:1px solid var(--border); }
@@ -340,11 +339,6 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .goal-fc-dim  { font-size:12px; font-weight:500; color:var(--t3); }
 .goals-show-btn { width:100%; padding:13px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px; color:var(--t2); font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; margin-top:16px; }
 .goals-show-btn:active { opacity:0.7; }
-.goals-ai-block { margin-top:20px; padding:14px 16px; background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.18); border-radius:16px; }
-.goals-ai-hdr { font-size:11px; font-weight:700; color:var(--purple-l); letter-spacing:0.4px; margin-bottom:8px; text-transform:uppercase; }
-.goals-ai-txt { font-size:13px; color:var(--t2); line-height:1.55; }
-.goals-ai-sub { font-size:12px; color:var(--t3); margin-top:5px; line-height:1.5; }
-.goals-ai-sub b { color:var(--t2); font-weight:500; }
 .sk-line { border-radius:6px; background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.04) 100%); background-size:200% 100%; animation:sk 1.5s ease-in-out infinite; }
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 /* bottom sheet */
@@ -593,7 +587,10 @@ async function loadHome() {
   if (dashData) { renderHome(dashData); return; }
   document.getElementById('home-body').innerHTML = '<div class="loading" style="flex:1"><div class="spinner"></div>Carregando...</div>';
   try {
-    const res = await fetch(API+'/api/dashboard');
+    const [res] = await Promise.all([
+      fetch(API+'/api/dashboard'),
+      carregarMetas(),
+    ]);
     dashData = await res.json();
     renderHome(dashData);
   } catch {
@@ -663,7 +660,6 @@ function renderHome(d) {
     ${renderGoals(d)}
   `;
 
-  loadGoalsForecast();
 }
 
 // ── Sub-page renderers ───────────────────────────────────────
@@ -883,31 +879,31 @@ async function testTelegram() {
 }
 
 // ── Metas de Gastos ──────────────────────────────────────────
-const METAS_KEY = 'dindin_metas';
+// Gastos fixos mensais de carro (parcela + seguro) que sempre são deduzidos da meta
+const CARRO_FIXOS = { 'Carro': 2222.22 + 339.00 };
 let goalsExpanded = false;
 const GOALS_LIMIT = 5;
 
-function getMetasLocais() {
-  try { return JSON.parse(localStorage.getItem(METAS_KEY) || '{}'); } catch { return {}; }
-}
+// Cache local das metas vindas do servidor (compartilhadas entre dispositivos)
+let metasServidor = {};
 
-function salvarMetaLocal(cat, val) {
-  const m = getMetasLocais();
-  if (val > 0) m[cat] = val; else delete m[cat];
-  localStorage.setItem(METAS_KEY, JSON.stringify(m));
+async function carregarMetas() {
+  try {
+    const res = await fetch(API + '/api/metas');
+    if (res.ok) metasServidor = await res.json();
+  } catch { /* mantém cache anterior */ }
 }
 
 let metaSheetCat = null;
 
 function openMeta(cat, sugestao) {
   metaSheetCat = cat;
-  const m = getMetasLocais();
   document.getElementById('meta-sheet-cat').textContent = cat;
-  document.getElementById('meta-sheet-inp').value = m[cat] > 0 ? m[cat] : '';
+  document.getElementById('meta-sheet-inp').value = metasServidor[cat] > 0 ? metasServidor[cat] : '';
   const sug = document.getElementById('meta-sheet-sug');
   sug.textContent = sugestao > 0 ? `Sugestão: ${fmtK(sugestao)} (média 3 meses)` : '';
   const rem = document.getElementById('meta-sheet-rem');
-  rem.style.display = m[cat] > 0 ? '' : 'none';
+  rem.style.display = metasServidor[cat] > 0 ? '' : 'none';
   document.getElementById('meta-sheet').style.display = 'flex';
   setTimeout(() => document.getElementById('meta-sheet-inp').focus(), 150);
 }
@@ -918,27 +914,40 @@ function closeMeta(e) {
   metaSheetCat = null;
 }
 
-function saveMeta() {
+async function saveMeta() {
   if (!metaSheetCat) return;
   const val = parseFloat(document.getElementById('meta-sheet-inp').value);
-  salvarMetaLocal(metaSheetCat, isNaN(val) || val <= 0 ? 0 : Math.round(val));
+  const valor = isNaN(val) || val <= 0 ? 0 : Math.round(val);
   document.getElementById('meta-sheet').style.display = 'none';
+  const cat = metaSheetCat;
   metaSheetCat = null;
+  try {
+    const res = await fetch(API + '/api/metas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categoria: cat, valor }),
+    });
+    if (res.ok) metasServidor = await res.json();
+  } catch { /* mantém cache */ }
   if (dashData) renderHome(dashData);
 }
 
-function removeMeta() {
+async function removeMeta() {
   if (!metaSheetCat) return;
-  salvarMetaLocal(metaSheetCat, 0);
+  const cat = metaSheetCat;
   document.getElementById('meta-sheet').style.display = 'none';
   metaSheetCat = null;
+  try {
+    const res = await fetch(API + '/api/metas/' + encodeURIComponent(cat), { method: 'DELETE' });
+    if (res.ok) metasServidor = await res.json();
+  } catch { /* mantém cache */ }
   if (dashData) renderHome(dashData);
 }
 
 function renderGoals(d) {
   const gpc = d.gastoPorCategoria || {};
   const sugestoes = d.sugestoesMetas || {};
-  const metasLocais = getMetasLocais();
+  const metasLocais = metasServidor;
   const catNames = Object.keys(d.categorias || {});
   const dec = Math.max(1, d.diasDecorridos || 1);
   const totalDias = Math.max(1, dec + (d.diasRestantes || 30) - 1);
@@ -950,7 +959,9 @@ function renderGoals(d) {
   ]);
 
   const items = Array.from(nomes).map(nome => {
-    const gasto = gpc[nome] || 0;
+    const gastoBase = gpc[nome] || 0;
+    const fixo = CARRO_FIXOS[nome] || 0;
+    const gasto = Math.max(0, gastoBase - fixo);
     const meta = metasLocais[nome] || 0;
     const sugestao = sugestoes[nome] || 0;
     const pct = meta > 0 ? Math.min(150, Math.round(gasto / meta * 100)) : 0;
@@ -1019,19 +1030,11 @@ function renderGoals(d) {
     ? `<button class="goals-show-btn" id="goals-show-btn" onclick="toggleMoreGoals(${total})">Ver todas as ${total} categorias</button>`
     : '';
 
-  const hasAnyGoal = items.some(it => it.meta > 0);
-
   return `<div class="goals-section">
     <div class="goals-hdr">
       <span class="goals-lbl">Metas do mês</span>
-      <span class="goals-ai-tag">✦ Previsão IA</span>
     </div>
     ${itemsHtml}
-    ${hasAnyGoal ? `<div class="goals-ai-block" id="goals-ai-block">
-      <div class="goals-ai-hdr">✦ IA</div>
-      <div class="sk-line" style="height:13px;width:82%"></div>
-      <div class="sk-line" style="height:13px;width:60%;margin-top:7px"></div>
-    </div>` : ''}
     ${showMoreHtml}
   </div>`;
 }
@@ -1045,38 +1048,6 @@ function toggleMoreGoals(total) {
   if (btn) btn.textContent = goalsExpanded ? 'Mostrar menos' : `Ver todas as ${total} categorias`;
 }
 
-async function loadGoalsForecast() {
-  const metasLocais = getMetasLocais();
-  if (!Object.keys(metasLocais).length) {
-    const block = document.getElementById('goals-ai-block');
-    if (block) block.innerHTML = '';
-    return;
-  }
-  try {
-    const res = await fetch(API + '/api/metas-forecast', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goals: metasLocais }),
-    });
-    if (!res.ok) throw new Error('http ' + res.status);
-    const data = await res.json();
-    const block = document.getElementById('goals-ai-block');
-    if (!block) return;
-    if (!data.geral && !(data.insights && data.insights.length)) {
-      block.innerHTML = '';
-      return;
-    }
-    const subsHtml = (data.insights || []).slice(0, 3)
-      .map(ins => `<div class="goals-ai-sub">· <b>${esc(ins.categoria)}</b>: ${esc(ins.msg)}</div>`)
-      .join('');
-    block.innerHTML = `<div class="goals-ai-hdr">✦ IA diz</div>
-      <div class="goals-ai-txt">${esc(data.geral || '')}</div>
-      ${subsHtml}`;
-  } catch {
-    const block = document.getElementById('goals-ai-block');
-    if (block) block.innerHTML = '';
-  }
-}
 
 // ── Boot ─────────────────────────────────────────────────────
 loadHome();

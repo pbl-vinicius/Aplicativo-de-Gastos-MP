@@ -8,6 +8,7 @@ const router = express.Router();
 const { getContextoCompleto, getDashboard } = require('../services/sheets');
 const { chat, clearHistory } = require('../services/claude');
 const { enviarAlertaImediato, testarBot } = require('../services/telegram');
+const { getMetas, setMeta, deleteMeta } = require('../services/metas');
 
 const CLOSING_DAY = 24;
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -197,47 +198,29 @@ router.post('/simulate', async (req, res) => {
   }
 });
 
-// ─── POST /api/metas-forecast ────────────────────────────
-// Previsão inteligente de gastos por categoria via IA (Haiku).
-// Recebe { goals: { "Categoria": 500, ... } } — metas definidas pelo usuário.
-router.post('/metas-forecast', async (req, res) => {
-  try {
-    const userGoals = req.body?.goals || {};
-    const ctx = await getCtx();
-    const diasRestantes = getDiasRestantes();
-    const diasDecorridos = getDiasDecorridos();
-    const totalDias = diasDecorridos + diasRestantes - 1;
+// ─── GET /api/metas ───────────────────────────────────────
+// Retorna todas as metas salvas no servidor (compartilhadas entre dispositivos).
+router.get('/metas', (req, res) => {
+  res.json(getMetas());
+});
 
-    const gastoPorCategoria = {};
-    (ctx.transacoes || []).forEach(t => {
-      if (t.valor > 0 && t.categoria) {
-        const cat = t.categoria.trim();
-        gastoPorCategoria[cat] = (gastoPorCategoria[cat] || 0) + t.valor;
-      }
-    });
-
-    const catsParaAnalise = Object.keys(gastoPorCategoria)
-      .filter(nome => (gastoPorCategoria[nome] || 0) > 0)
-      .map(nome => {
-        const meta = userGoals[nome] || 0;
-        const gasto = gastoPorCategoria[nome] || 0;
-        const projecao = Math.round(gasto / diasDecorridos * totalDias);
-        return { nome, meta, gasto, projecao, riscoPct: meta > 0 ? projecao / meta : 0 };
-      })
-      .sort((a, b) => b.riscoPct - a.riscoPct)
-      .slice(0, 6);
-
-    if (!catsParaAnalise.length) {
-      return res.json({ geral: null, insights: [] });
-    }
-
-    const { gerarPrevisaoCategorias } = require('../services/claude');
-    const result = await gerarPrevisaoCategorias(catsParaAnalise, ctx.mesAtual, diasDecorridos, diasRestantes);
-    res.json(result);
-  } catch (err) {
-    console.error('/api/metas-forecast error:', err.message);
-    res.status(500).json({ error: 'Erro ao gerar previsão.' });
+// ─── POST /api/metas ──────────────────────────────────────
+// Cria ou atualiza a meta de uma categoria. Body: { categoria, valor }
+router.post('/metas', (req, res) => {
+  const { categoria, valor } = req.body || {};
+  if (!categoria || typeof categoria !== 'string') {
+    return res.status(400).json({ error: 'categoria obrigatória' });
   }
+  const v = parseFloat(valor);
+  const metas = setMeta(categoria.trim(), isNaN(v) || v <= 0 ? 0 : Math.round(v));
+  res.json(metas);
+});
+
+// ─── DELETE /api/metas/:categoria ─────────────────────────
+// Remove a meta de uma categoria.
+router.delete('/metas/:categoria', (req, res) => {
+  const metas = deleteMeta(decodeURIComponent(req.params.categoria));
+  res.json(metas);
 });
 
 // ─── POST /api/telegram/test ──────────────────────────────
