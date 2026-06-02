@@ -961,12 +961,11 @@ function renderGoals(d) {
   const items = Array.from(nomes).map(nome => {
     const gastoBase = gpc[nome] || 0;
     const fixo = CARRO_FIXOS[nome] || 0;
-    const gasto = gastoBase + fixo;
+    const gasto = Math.max(0, gastoBase - fixo);
     const meta = metasLocais[nome] || 0;
     const sugestao = sugestoes[nome] || 0;
     const pct = meta > 0 ? Math.min(150, Math.round(gasto / meta * 100)) : 0;
-    // projecao: parte variável extrapolada + fixos (que não escalam com dias)
-    const projecao = dec > 0 ? Math.round((gastoBase / dec * totalDias) + fixo) : gasto;
+    const projecao = dec > 0 ? Math.round(gasto / dec * totalDias) : gasto;
     return { nome, gasto, meta, sugestao, pct, projecao, projecaoPct: meta > 0 ? projecao / meta : 0 };
   }).sort((a, b) => {
     // Com meta: ordena por % usada (desc); sem meta: ordena por valor gasto (desc)
