@@ -587,7 +587,10 @@ async function loadHome() {
   if (dashData) { renderHome(dashData); return; }
   document.getElementById('home-body').innerHTML = '<div class="loading" style="flex:1"><div class="spinner"></div>Carregando...</div>';
   try {
-    const res = await fetch(API+'/api/dashboard');
+    const [res] = await Promise.all([
+      fetch(API+'/api/dashboard'),
+      carregarMetas(),
+    ]);
     dashData = await res.json();
     renderHome(dashData);
   } catch {
@@ -876,33 +879,31 @@ async function testTelegram() {
 }
 
 // ── Metas de Gastos ──────────────────────────────────────────
-const METAS_KEY = 'dindin_metas';
 // Gastos fixos mensais de carro (parcela + seguro) que sempre são deduzidos da meta
 const CARRO_FIXOS = { 'Carro': 2222.22 + 339.00 };
 let goalsExpanded = false;
 const GOALS_LIMIT = 5;
 
-function getMetasLocais() {
-  try { return JSON.parse(localStorage.getItem(METAS_KEY) || '{}'); } catch { return {}; }
-}
+// Cache local das metas vindas do servidor (compartilhadas entre dispositivos)
+let metasServidor = {};
 
-function salvarMetaLocal(cat, val) {
-  const m = getMetasLocais();
-  if (val > 0) m[cat] = val; else delete m[cat];
-  localStorage.setItem(METAS_KEY, JSON.stringify(m));
+async function carregarMetas() {
+  try {
+    const res = await fetch(API + '/api/metas');
+    if (res.ok) metasServidor = await res.json();
+  } catch { /* mantém cache anterior */ }
 }
 
 let metaSheetCat = null;
 
 function openMeta(cat, sugestao) {
   metaSheetCat = cat;
-  const m = getMetasLocais();
   document.getElementById('meta-sheet-cat').textContent = cat;
-  document.getElementById('meta-sheet-inp').value = m[cat] > 0 ? m[cat] : '';
+  document.getElementById('meta-sheet-inp').value = metasServidor[cat] > 0 ? metasServidor[cat] : '';
   const sug = document.getElementById('meta-sheet-sug');
   sug.textContent = sugestao > 0 ? `Sugestão: ${fmtK(sugestao)} (média 3 meses)` : '';
   const rem = document.getElementById('meta-sheet-rem');
-  rem.style.display = m[cat] > 0 ? '' : 'none';
+  rem.style.display = metasServidor[cat] > 0 ? '' : 'none';
   document.getElementById('meta-sheet').style.display = 'flex';
   setTimeout(() => document.getElementById('meta-sheet-inp').focus(), 150);
 }
@@ -913,27 +914,40 @@ function closeMeta(e) {
   metaSheetCat = null;
 }
 
-function saveMeta() {
+async function saveMeta() {
   if (!metaSheetCat) return;
   const val = parseFloat(document.getElementById('meta-sheet-inp').value);
-  salvarMetaLocal(metaSheetCat, isNaN(val) || val <= 0 ? 0 : Math.round(val));
+  const valor = isNaN(val) || val <= 0 ? 0 : Math.round(val);
   document.getElementById('meta-sheet').style.display = 'none';
+  const cat = metaSheetCat;
   metaSheetCat = null;
+  try {
+    const res = await fetch(API + '/api/metas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categoria: cat, valor }),
+    });
+    if (res.ok) metasServidor = await res.json();
+  } catch { /* mantém cache */ }
   if (dashData) renderHome(dashData);
 }
 
-function removeMeta() {
+async function removeMeta() {
   if (!metaSheetCat) return;
-  salvarMetaLocal(metaSheetCat, 0);
+  const cat = metaSheetCat;
   document.getElementById('meta-sheet').style.display = 'none';
   metaSheetCat = null;
+  try {
+    const res = await fetch(API + '/api/metas/' + encodeURIComponent(cat), { method: 'DELETE' });
+    if (res.ok) metasServidor = await res.json();
+  } catch { /* mantém cache */ }
   if (dashData) renderHome(dashData);
 }
 
 function renderGoals(d) {
   const gpc = d.gastoPorCategoria || {};
   const sugestoes = d.sugestoesMetas || {};
-  const metasLocais = getMetasLocais();
+  const metasLocais = metasServidor;
   const catNames = Object.keys(d.categorias || {});
   const dec = Math.max(1, d.diasDecorridos || 1);
   const totalDias = Math.max(1, dec + (d.diasRestantes || 30) - 1);

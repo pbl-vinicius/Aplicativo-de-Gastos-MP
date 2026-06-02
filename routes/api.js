@@ -8,6 +8,7 @@ const router = express.Router();
 const { getContextoCompleto, getDashboard } = require('../services/sheets');
 const { chat, clearHistory } = require('../services/claude');
 const { enviarAlertaImediato, testarBot } = require('../services/telegram');
+const { getMetas, setMeta, deleteMeta } = require('../services/metas');
 
 const CLOSING_DAY = 24;
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -195,6 +196,31 @@ router.post('/simulate', async (req, res) => {
     console.error('/api/simulate error:', err.message);
     res.status(500).json({ error: 'Erro ao simular gasto.' });
   }
+});
+
+// ─── GET /api/metas ───────────────────────────────────────
+// Retorna todas as metas salvas no servidor (compartilhadas entre dispositivos).
+router.get('/metas', (req, res) => {
+  res.json(getMetas());
+});
+
+// ─── POST /api/metas ──────────────────────────────────────
+// Cria ou atualiza a meta de uma categoria. Body: { categoria, valor }
+router.post('/metas', (req, res) => {
+  const { categoria, valor } = req.body || {};
+  if (!categoria || typeof categoria !== 'string') {
+    return res.status(400).json({ error: 'categoria obrigatória' });
+  }
+  const v = parseFloat(valor);
+  const metas = setMeta(categoria.trim(), isNaN(v) || v <= 0 ? 0 : Math.round(v));
+  res.json(metas);
+});
+
+// ─── DELETE /api/metas/:categoria ─────────────────────────
+// Remove a meta de uma categoria.
+router.delete('/metas/:categoria', (req, res) => {
+  const metas = deleteMeta(decodeURIComponent(req.params.categoria));
+  res.json(metas);
 });
 
 // ─── POST /api/telegram/test ──────────────────────────────
