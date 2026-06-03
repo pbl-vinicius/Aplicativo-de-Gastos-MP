@@ -317,10 +317,12 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 /* ══════════════════════════════════════════════════
    METAS DE GASTOS — HOME
 ══════════════════════════════════════════════════ */
-.goals-section { margin-top: 28px; margin-left: -16px; margin-right: -16px; border-top:1px solid rgba(255,255,255,0.06); }
-.goals-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:0; padding: 14px 16px 10px; }
+.goals-section { margin-top: 28px; margin-left: -16px; margin-right: -16px; }
+.goals-hdr { display:flex; align-items:center; justify-content:space-between; padding: 0 16px 12px; }
 .goals-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--t3); }
-.goal-item { padding:16px; border-radius:0; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.06); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .15s; margin-bottom:0; }
+.goals-group { background:rgba(255,255,255,0.045); border-top:1px solid rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.08); }
+.goal-item { padding:16px; border-bottom:1px solid rgba(255,255,255,0.06); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .12s; }
+.goal-item:last-child { border-bottom:none; }
 .goal-item:active { background:rgba(255,255,255,0.06); }
 .goal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
 .goal-name-grp { display:flex; align-items:center; gap:9px; min-width:0; flex:1; }
@@ -339,7 +341,7 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 .goal-no-meta { display:flex; align-items:center; justify-content:space-between; }
 .goal-no-meta-val { font-size:20px; font-weight:800; letter-spacing:-.5px; color:var(--t1); }
 .goal-set-cta { font-size:12px; font-weight:600; color:var(--t3); background:rgba(255,255,255,0.07); padding:5px 10px; border-radius:20px; }
-.goals-show-btn { width:100%; padding:16px; background:rgba(255,255,255,0.04); border:none; border-top:1px solid rgba(255,255,255,0.06); border-radius:0; color:var(--t2); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:0; }
+.goals-show-btn { width:100%; padding:14px; background:rgba(255,255,255,0.04); border:none; border-top:1px solid rgba(255,255,255,0.08); color:var(--t2); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
 .goals-show-btn:active { opacity:0.7; }
 .sk-line { border-radius:6px; background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.04) 100%); background-size:200% 100%; animation:sk 1.5s ease-in-out infinite; }
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -1036,8 +1038,10 @@ function renderGoals(d) {
     <div class="goals-hdr">
       <span class="goals-lbl">Metas do mês</span>
     </div>
-    ${itemsHtml}
-    ${showMoreHtml}
+    <div class="goals-group">
+      ${itemsHtml}
+      ${showMoreHtml}
+    </div>
   </div>`;
 }
 
