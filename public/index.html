@@ -317,27 +317,29 @@ html, body { height: 100%; background: var(--bg); color: var(--t1); font-family:
 /* ══════════════════════════════════════════════════
    METAS DE GASTOS — HOME
 ══════════════════════════════════════════════════ */
-.goals-section { margin-top: 32px; }
-.goals-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.goals-section { margin-top: 28px; }
+.goals-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .goals-lbl { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--t3); }
-.goal-item { padding:16px 0; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity .12s; }
-.goal-item:active { opacity:0.6; }
-.goal-item + .goal-item { border-top:1px solid var(--border); }
-.goal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.goal-name-grp { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
-.goal-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.goal-name { font-size:15px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.goal-pct { font-size:13px; font-weight:700; flex-shrink:0; margin-left:8px; }
-.goal-track { height:4px; background:rgba(255,255,255,0.07); border-radius:20px; overflow:hidden; margin-bottom:7px; }
+.goal-item { padding:16px; border-radius:18px; background:rgba(255,255,255,0.045); border:1px solid rgba(255,255,255,0.07); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .15s; margin-bottom:8px; }
+.goal-item:active { background:rgba(255,255,255,0.08); }
+.goal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.goal-name-grp { display:flex; align-items:center; gap:9px; min-width:0; flex:1; }
+.goal-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.goal-name { font-size:13px; font-weight:500; color:var(--t2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.goal-pct { font-size:15px; font-weight:800; flex-shrink:0; margin-left:8px; letter-spacing:-.3px; }
+.goal-val-main { font-size:22px; font-weight:800; letter-spacing:-.6px; color:var(--t1); margin-bottom:10px; }
+.goal-track { height:5px; background:rgba(255,255,255,0.08); border-radius:20px; overflow:hidden; margin-bottom:9px; }
 .goal-fill { height:100%; border-radius:20px; transition:width 0.9s cubic-bezier(.4,0,.2,1); }
 .goal-bot { display:flex; align-items:center; justify-content:space-between; }
-.goal-spent { font-size:12px; color:var(--t2); }
-.goal-spent b { color:var(--t1); font-weight:600; }
+.goal-limit { font-size:12px; color:var(--t3); }
 .goal-fc-ok   { font-size:12px; font-weight:500; color:var(--green); }
 .goal-fc-warn { font-size:12px; font-weight:500; color:var(--orange); }
 .goal-fc-over { font-size:12px; font-weight:500; color:var(--red); }
 .goal-fc-dim  { font-size:12px; font-weight:500; color:var(--t3); }
-.goals-show-btn { width:100%; padding:13px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px; color:var(--t2); font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; margin-top:16px; }
+.goal-no-meta { display:flex; align-items:center; justify-content:space-between; }
+.goal-no-meta-val { font-size:20px; font-weight:800; letter-spacing:-.5px; color:var(--t1); }
+.goal-set-cta { font-size:12px; font-weight:600; color:var(--t3); background:rgba(255,255,255,0.07); padding:5px 10px; border-radius:20px; }
+.goals-show-btn { width:100%; padding:14px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:16px; color:var(--t2); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:4px; }
 .goals-show-btn:active { opacity:0.7; }
 .sk-line { border-radius:6px; background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.04) 100%); background-size:200% 100%; animation:sk 1.5s ease-in-out infinite; }
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -882,7 +884,7 @@ async function testTelegram() {
 // Gastos fixos mensais de carro (parcela + seguro) que sempre são deduzidos da meta
 const CARRO_FIXOS = { 'Carro (gasolina/estac/pedágio)': 2222.22 + 339.00 };
 let goalsExpanded = false;
-const GOALS_LIMIT = 5;
+const GOALS_LIMIT = 8;
 
 // Cache local das metas vindas do servidor (compartilhadas entre dispositivos)
 let metasServidor = {};
@@ -1001,24 +1003,24 @@ function renderGoals(d) {
           </div>
           <span class="goal-pct" style="color:${pctColor}">${item.pct}%</span>
         </div>
+        <div class="goal-val-main">${fmtK(item.gasto)}</div>
         <div class="goal-track"><div class="goal-fill" style="width:${Math.min(100,item.pct)}%;background:${barColor}"></div></div>
         <div class="goal-bot">
-          <span class="goal-spent"><b>${fmtK(item.gasto)}</b> <span style="color:var(--t3)">/ ${fmtK(item.meta)}</span></span>
+          <span class="goal-limit">limite ${fmtK(item.meta)}</span>
           ${fcHtml}
         </div>
       </div>`;
     } else {
-      // Sem meta definida — mostra gasto + convite para definir
       return `<div class="goal-item"${hidden ? ' style="display:none"' : ''} onclick="${onclick}">
         <div class="goal-top">
           <div class="goal-name-grp">
             <div class="goal-dot" style="background:${color}"></div>
             <span class="goal-name">${esc(item.nome)}</span>
           </div>
-          <span class="goal-fc-dim" style="font-size:13px">Definir meta →</span>
+          <span class="goal-set-cta">+ meta</span>
         </div>
-        <div class="goal-bot">
-          <span class="goal-spent"><b>${fmtK(item.gasto)}</b></span>
+        <div class="goal-no-meta">
+          <span class="goal-no-meta-val">${fmtK(item.gasto)}</span>
           <span class="goal-fc-dim">→ ${fmtK(item.projecao)} previsto</span>
         </div>
       </div>`;
