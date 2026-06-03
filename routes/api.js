@@ -199,28 +199,37 @@ router.post('/simulate', async (req, res) => {
 });
 
 // ─── GET /api/metas ───────────────────────────────────────
-// Retorna todas as metas salvas no servidor (compartilhadas entre dispositivos).
-router.get('/metas', (req, res) => {
-  res.json(getMetas());
+router.get('/metas', async (req, res) => {
+  try {
+    res.json(await getMetas());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ─── POST /api/metas ──────────────────────────────────────
-// Cria ou atualiza a meta de uma categoria. Body: { categoria, valor }
-router.post('/metas', (req, res) => {
+router.post('/metas', async (req, res) => {
   const { categoria, valor } = req.body || {};
   if (!categoria || typeof categoria !== 'string') {
     return res.status(400).json({ error: 'categoria obrigatória' });
   }
-  const v = parseFloat(valor);
-  const metas = setMeta(categoria.trim(), isNaN(v) || v <= 0 ? 0 : Math.round(v));
-  res.json(metas);
+  try {
+    const v = parseFloat(valor);
+    const metas = await setMeta(categoria.trim(), isNaN(v) || v <= 0 ? 0 : Math.round(v));
+    res.json(metas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ─── DELETE /api/metas/:categoria ─────────────────────────
-// Remove a meta de uma categoria.
-router.delete('/metas/:categoria', (req, res) => {
-  const metas = deleteMeta(decodeURIComponent(req.params.categoria));
-  res.json(metas);
+router.delete('/metas/:categoria', async (req, res) => {
+  try {
+    const metas = await deleteMeta(decodeURIComponent(req.params.categoria));
+    res.json(metas);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ─── POST /api/telegram/test ──────────────────────────────
