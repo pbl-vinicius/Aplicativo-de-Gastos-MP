@@ -665,7 +665,7 @@ function renderHome(d) {
 // ── Sub-page renderers ───────────────────────────────────────
 function renderGastos() {
   if (!dashData) return;
-  const cats = Object.entries(dashData.categorias||{}).sort(([,a],[,b])=>b-a);
+  const cats = Object.entries(dashData.gastoPorCategoria||{}).sort(([,a],[,b])=>b-a);
   const total = cats.reduce((s,[,v])=>s+v,0)||1;
   const max = cats[0]?.[1]||1;
 
